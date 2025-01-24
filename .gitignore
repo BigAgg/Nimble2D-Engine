@@ -1,3 +1,7 @@
+.cache/
 build/
-.o
-.exe
+*.o
+*.exe
+*.log
+*.iss
+compile_commands.json

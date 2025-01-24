@@ -1,0 +1,12 @@
+[submodule "external/raylib"]
+	path = external/raylib
+	url = https://github.com/raysan5/raylib
+[submodule "external/sol"]
+	path = external/sol
+	url = https://github.com/ThePhD/sol2
+[submodule "external/rlimgui"]
+	path = external/rlimgui
+	url = https://github.com/raylib-extras/rlImGui
+[submodule "external/imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui

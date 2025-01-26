@@ -14,6 +14,11 @@ Rendering is provided by [Raylib](https://www.raylib.com/) while the UI I am usi
 git clone --recurse-submodules https://github.com/your-username/your-repository.git
 ```
 
+## Resource Management:
+If you want to add additional Resources to the Project like Button png's etc. you should create a new folder in the cloned directory called **res/** and store your Resources here. They will be copied automatically to the binary location after building. 
+
+**Keep in Mind, that you have to create it BEFORE Preparing the Project (Step down below).**
+
 ## Building the engine
 ### Windows:
 ***Requirements***:

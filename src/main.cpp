@@ -1,28 +1,27 @@
-#include "raylib.h"
-#include "sol/state.hpp"
-#include <cassert>
+#include "engine.h"
+#include "logger.h"
+#include <cstdlib>
 #include <iostream>
+#include <string>
 
-int x = 0;
+#ifndef VERSION
+#define VERSION "VERSION"
+#endif
 
 int main(int argc, char *argv[]) {
-  InitWindow(800, 600, "Raylib CMake Example");
-  // lua_State *L;
-  sol::state lua;
-  int y = 0;
-  lua.set_function("beep", [&y] { ++y; });
-  lua.script("beep()");
-  assert(y == 1);
-
-  while (!WindowShouldClose()) {
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    DrawText("Hello, Raylib with CMake!", 190, 200, 20, LIGHTGRAY);
-    EndDrawing();
+  logger::deletelog();
+  logger::log("NIMBLE 2D ENGINE", VERSION);
+  try {
+    engine::setup();
+    engine::run();
+    engine::saveSettings();
+    engine::shutdown();
+  } catch (const std::exception &e) {
+    logger::log("ERROR", e.what());
+    std::ifstream src("run.log", std::ios::binary);
+    std::ofstream dest("crash.log", std::ios::binary);
+    dest << src.rdbuf();
+    return EXIT_FAILURE;
   }
-  CloseWindow();
-  x++;
-  std::cout << "Hello, World!\n";
-  x++;
-  return 0;
+  return EXIT_SUCCESS;
 }

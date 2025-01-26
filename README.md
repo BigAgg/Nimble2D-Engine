@@ -10,7 +10,7 @@ The **engine** will be light weight providing features to create 2D scenes and h
 Rendering is provided by [Raylib](https://www.raylib.com/) while the UI I am using is [rlImGuI](https://github.com/raylib-extras/rlImGui) and [ImGuI](https://github.com/ocornut/imgui)
 
 ## Cloning the repo:
-```
+```sh
 git clone --recurse-submodules https://github.com/your-username/your-repository.git
 ```
 
@@ -20,7 +20,7 @@ git clone --recurse-submodules https://github.com/your-username/your-repository.
 - [CMake](https://cmake.org/)
 - Any c++ Compiler that supports c++17 or higher like gcc
 
-**Preparing the Project**
+### Preparing the Project:
 cd into the cloned repository, create a folder named *build* and cd into the *build* folder
 ```sh
 mkdir build
@@ -28,24 +28,24 @@ cd build
 cmake ..
 ```
 
-**Building debug:**
+### Building debug:
 cd into the build directory *Preparing the Project* and build it in debug:
 ```sh
 cmake --build .
 ```
 After building the Project in **debug mode** you can find the **Executable** under "build/Debug/Nimble2D.exe"
 
-**Building release:**
+### Building release:
 cd into the build directory *Preparing the Project* and build it in release:
 ```sh
 cmake --build . --config Release
 ```
-After building the Project in **release mode** you can find the **Executable** under "bin/release/"
+After building the Project in **release mode** you can find the **Executable** under "build/Release/Nimble2D.exe"
 
 ### Linux:
 Linux is currently not supported but it is planned to be in the future!
 
-## Ressources
+## Resources
 [Raylib](https://www.raylib.com/)
 
 [sol](https://github.com/ThePhD/sol2)

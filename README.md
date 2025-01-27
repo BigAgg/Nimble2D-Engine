@@ -11,7 +11,7 @@ Rendering is provided by [Raylib](https://www.raylib.com/) while the UI I am usi
 
 ## Cloning the repo:
 ```sh
-git clone --recurse-submodules https://github.com/your-username/your-repository.git
+git clone --recurse-submodules https://github.com/BigAgg/Nimble2D-Engine.git
 ```
 
 ## Resource Management:

@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 3.8)
 project(Nimble2D)
+# Project Version
+set(PROJECT_VERSION "0.0.1")
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+
+# Setting compile definitions
+add_compile_definitions(VERSION="${PROJECT_VERSION}")
+add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 
 # Include directories
 include_directories(include)
@@ -39,8 +45,15 @@ target_link_libraries(rlImGui PRIVATE raylib ImGui)
 add_subdirectory(include/lua)
 include_directories(include/lua/src)
 
+# Organize source files into "Source Files"
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp src/*.c src/entitycomponentsystem/*.c src/entitycomponentsystem/*.cpp)
+file(GLOB_RECURSE HEADER_FILES src/*.h src/*.hpp src/entitycomponentsystem/*.h src/entitycomponentsystem/*.hpp)
+
+source_group("Source Files" FILES ${SOURCE_FILES})
+source_group("Header Files" FILES ${HEADER_FILES})
+
 # Add source files
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 
 # Check if the generator is Visual Studio
 if (CMAKE_GENERATOR MATCHES "Visual Studio")

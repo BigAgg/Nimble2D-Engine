@@ -11,25 +11,27 @@ using namespace ImGui;
 inline bool settings_open = false;
 inline bool style_editor_open = false;
 inline bool global_variables_open = false;
+inline bool assign_global_key = false;
+inline unsigned int assign_global_key_index = -1;
 
 inline char buff[30];
 
 inline float MainMenuBarOffset = 19.0f;
 // Component Selector Settings
-inline ImVec2 ComponentSelectorBasePos = {0.0f, MainMenuBarOffset};
-inline ImVec2 ComponentSelectorBaseSize = {232.0f, 484.0f};
+inline const ImVec2 ComponentSelectorBasePos = {0.0f, MainMenuBarOffset};
+inline const ImVec2 ComponentSelectorBaseSize = {232.0f, 484.0f};
 // File Browser Settings
-inline ImVec2 FileBrowserBasePos = {0.0f, 484.0f};
-inline ImVec2 FileBrowserBaseSize = {232.0f, 236.0f};
+inline const ImVec2 FileBrowserBasePos = {0.0f, 484.0f};
+inline const ImVec2 FileBrowserBaseSize = {232.0f, 236.0f};
 // Game Scene Viewer Settings
-inline ImVec2 GameSceneViewerBasePos = {231.0f, MainMenuBarOffset};
-inline ImVec2 GameSceneViewerBaseSize = {566.0f, 484.0f};
+inline const ImVec2 GameSceneViewerBasePos = {231.0f, MainMenuBarOffset};
+inline const ImVec2 GameSceneViewerBaseSize = {566.0f, 484.0f};
 // Asset Viewer Settings
-inline ImVec2 AssetViewerBasePos = {231.0f, 484.0f};
-inline ImVec2 AssetViewerBaseSize = {566.0f, 236.0f};
+inline const ImVec2 AssetViewerBasePos = {231.0f, 484.0f};
+inline const ImVec2 AssetViewerBaseSize = {566.0f, 236.0f};
 // Object Viewer Settings
-inline ImVec2 ObjectViewerBasePos = {797.0f, MainMenuBarOffset};
-inline ImVec2 ObjectViewerBaseSize = {287.0f, 720.0f};
+inline const ImVec2 ObjectViewerBasePos = {797.0f, MainMenuBarOffset};
+inline const ImVec2 ObjectViewerBaseSize = {287.0f, 720.0f};
 
 void HandleMainMenuBar();
 void HandleGameSceneViewer();
@@ -40,7 +42,7 @@ void HandleFileBrowser();
 void HandleSettingsMenu();
 
 inline void HandleMainMenuBar() {
-  BeginMainMenuBar(); // Starting the EndMainMenuBar
+  BeginMainMenuBar(); // Starting the MainMenuBar
 #ifdef VERSION
   Text(VERSION);
 #endif
@@ -57,12 +59,14 @@ inline void HandleMainMenuBar() {
     }
     EndMenu(); // Ending the "File" menu
   }
+  // Manage Settings Menu
   if (MenuItem("Settings")) {
     settings_open = !settings_open;
   }
   if (settings_open) {
     HandleSettingsMenu();
   }
+  // Manage Style Editor Window
   if (MenuItem("Style Editor")) {
     style_editor_open = !style_editor_open;
   }
@@ -73,18 +77,63 @@ inline void HandleMainMenuBar() {
       style_editor_open = false;
     End();
   }
-
+  // Manage Global Variables Window
   if (MenuItem("Global Variables"))
     global_variables_open = !global_variables_open;
 
   if (global_variables_open) {
+    SetNextWindowSize(ImVec2(400, 700));
     Begin("Global Variables", &global_variables_open,
-          ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize);
+          ImGuiWindowFlags_NoResize);
     BeginTabBar("##tabs");
+    // Manage Keys (Keyboard actions)
     if (BeginTabItem("Global Keys")) {
-      SeparatorText("Key Name          Key");
+      if (Button("New Key")) {
+        globals::sceneHandler.AddGlobalKey("NEW_KEY", '0');
+      }
+      BeginChild("Key Name", ImVec2(GetContentRegionAvail().x * 0.8f, GetContentRegionAvail().y));
+      SeparatorText("Key Name");
+			for (int x = 0; x < globals::sceneHandler.globalKeys.size(); x++) {
+				auto data = globals::sceneHandler.globalKeys[x].first.data();
+        std::string keyIndexName = "##" + std::to_string(x);
+        SetNextItemWidth(GetContentRegionAvail().x);
+				InputText(keyIndexName.c_str(), data, 30);
+				globals::sceneHandler.globalKeys[x].first = data;
+			}
+      EndChild();
+      SameLine();
+      BeginChild("Key", GetContentRegionAvail());
+      SeparatorText("Key");
+      if (BeginListBox("##Key", GetContentRegionAvail())) {
+        for (int x = 0; x < globals::sceneHandler.globalKeys.size(); x++) {
+          std::string keyIndexName(1, globals::sceneHandler.globalKeys[x].second);
+          keyIndexName += "##" + globals::sceneHandler.globalKeys[x].first;
+          if (Button(keyIndexName.c_str())) {
+            assign_global_key_index = x;
+            assign_global_key = true;
+          }
+          keyIndexName = "Keycode = " + std::to_string(globals::sceneHandler.globalKeys[x].second);
+          SetItemTooltip(keyIndexName.c_str());
+        }
+        if (assign_global_key) {
+          if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+            assign_global_key = false;
+            assign_global_key_index = -1;
+          }
+          const int newKey = GetKeyPressed();
+          if (newKey != 0 && newKey < 256) {
+            std::cout << newKey << "\n";
+            globals::sceneHandler.globalKeys[assign_global_key_index].second = newKey;
+            assign_global_key = false;
+            assign_global_key_index = -1;
+          }
+        }
+        EndListBox();
+      }
+      EndChild();
       EndTabItem();
     }
+    // Manage Variables
     if (BeginTabItem("Global Variables")) {
       SeparatorText("Variable Name         Value");
       EndTabItem();

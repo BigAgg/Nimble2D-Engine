@@ -22,8 +22,8 @@ If you want to add additional Resources to the Project like Button png's etc. yo
 ## Building the engine
 ### Windows:
 ***Requirements***:
-- [CMake](https://cmake.org/)
-- Any c++ Compiler that supports c++17 or higher like gcc
+- [CMake](https://cmake.org/) Version 3.8 or higher
+- Any c++ Compiler that supports c++20 or higher like gcc
 
 ### Preparing the Project:
 cd into the cloned repository, create a folder named *build* and cd into the *build* folder

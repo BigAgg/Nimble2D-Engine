@@ -22,19 +22,22 @@
 *	SOFTWARE.
 */
 
+#ifndef VERSION
+#define VERSION "0.0.0"
+#endif
+
 #include "engine.h"
 #include "logger.h"
 #include <cstdlib>
 #include <iostream>
 #include <string>
 
-#ifndef VERSION
-#define VERSION "VERSION"
-#endif
-
 int main(int argc, char *argv[]) {
   logger::deletelog();
   logger::log("NIMBLE 2D ENGINE", VERSION);
+#ifdef DEBUG
+  logger::log("DEBUG", "Running in Debug Mode!");
+#endif
   try {
     engine::setup();
     engine::run();

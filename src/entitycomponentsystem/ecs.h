@@ -65,14 +65,19 @@ public:
   virtual ~Component() = default;
   virtual void Update(float deltatime) = 0;
   virtual void Render() = 0;
-  // void AddScript(Script &&script) { this->script = std::move(script); }
+  void AddScript(Script &script) { this->script = std::move(script); }
+  Script script;
 };
 
 // GameObject class
 class GameObject {
 public:
+  GameObject(int size) {
+    components.reserve(size);
+  }
+
   // Add a component by unique_ptr
-  void AddComponent(std::unique_ptr<Component> c) {
+  void AddComponent(std::unique_ptr<Component> &c) {
     components.push_back(std::move(c));
   }
 
@@ -220,8 +225,19 @@ public:
     return true;
   }
 
+  bool AddGlobalKey(std::string name, const char key) {
+    for (auto&& var : globalKeys) {
+      if (var.first == name) {
+        return false;
+      }
+    }
+    globalKeys.emplace_back(std::make_pair(name, key));
+    return true;
+  }
+
   Scene *currentScene;
   std::vector<Scene> scenes;
+  std::vector<std::pair<std::string, char>> globalKeys;
   std::vector<std::pair<std::string, int>> globalInts;
   std::vector<std::pair<std::string, float>> globalFloats;
   std::vector<std::pair<std::string, std::string>> globalStrings;

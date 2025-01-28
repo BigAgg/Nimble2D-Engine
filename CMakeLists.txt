@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 project(Nimble2D)
 
 # Set C++ standard
@@ -42,8 +42,15 @@ include_directories(include/lua/src)
 # Add source files
 add_executable(${PROJECT_NAME} src/main.cpp)
 
-# Set the startup project for Visual Studio
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+# Check if the generator is Visual Studio
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+  message(STATUS "Setting up for Visual Studio...")
+  # Set the Working Directory for each Config 
+  set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>")
+
+  # Set the startup project for Visual Studio
+  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+endif()
 
 # Check if we're building on Windows
 if(WIN32)

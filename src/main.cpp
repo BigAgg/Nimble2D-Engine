@@ -33,22 +33,27 @@
 #include <string>
 
 int main(int argc, char *argv[]) {
-  logger::deletelog();
-  logger::log("NIMBLE 2D ENGINE", VERSION);
-#ifdef DEBUG
-  logger::log("DEBUG", "Running in Debug Mode!");
-#endif
+  // Getting starting arguments
+  bool logging = false;
+  if (argc > 0) {
+    for (int x = 0; x < argc; x++) {
+      std::string arg = argv[x];
+      if (arg == "-L" || arg == "--logging")
+        logging = true;
+    }
+  }
+  // Starting main loop
+  int exitCode = 0;
   try {
-    engine::setup();
+    engine::setup(logging);
     engine::run();
     engine::saveSettings();
-    engine::shutdown();
   } catch (const std::exception &e) {
     logger::log("ERROR", e.what());
-    std::ifstream src("run.log", std::ios::binary);
-    std::ofstream dest("crash.log", std::ios::binary);
-    dest << src.rdbuf();
-    return EXIT_FAILURE;
+    exitCode = 1;
   }
-  return EXIT_SUCCESS;
+  engine::shutdown();
+  if (exitCode != 0)
+    logger::backuplog(true);
+  return exitCode;
 }

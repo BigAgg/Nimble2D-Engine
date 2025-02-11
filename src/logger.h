@@ -1,13 +1,13 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#ifdef DEBUG
-  #include <iostream>
-#endif
-
+#include <iostream>
+#include <stdio.h>
 #include <string>
 #include <chrono>
 #include <format>
+#include <fstream>
+#include <filesystem>
 
 namespace logger {
 inline std::string getTimestamp() {
@@ -16,25 +16,54 @@ inline std::string getTimestamp() {
 }
 
 inline void log(std::string from, std::string msg) {
-  std::string outstr = "\t[" + from + "] " + msg + "\n";
-  outstr = getTimestamp() + outstr;
-
-  std::ofstream file("run.log", std::ios::app);
-
-  if (file.is_open() && file.good()) {
-    file << outstr;
-  } else {
-#ifdef DEBUG
-    std::cout << "Can't write to file\n";
-#endif
-  }
-  file.close();
-#ifdef DEBUG
+  const std::string outstr = getTimestamp() + "\t[" + from + "] " + msg + "\n";
   std::cout << outstr;
-#endif
 }
 
 inline void deletelog() { std::remove("run.log"); }
+
+inline void backuplog(bool isCrash) {
+  if (std::filesystem::exists("run.log")) {
+    int fileCount = 0;
+    if (isCrash) {
+      if (!std::filesystem::exists("./crashes/"))
+        std::filesystem::create_directories("./crashes/");
+      for (const auto& entry : std::filesystem::directory_iterator("./crashes/")) {
+        fileCount++;
+      }
+      const std::string copyName = "./crashes/crash_" + std::to_string(fileCount) + ".log";
+      std::filesystem::copy_file("run.log", copyName);
+      return;
+    }
+    if (!std::filesystem::exists("./logs/"))
+      std::filesystem::create_directories("./logs/");
+    for (const auto& entry : std::filesystem::directory_iterator("./logs/")) {
+      fileCount++;
+    }
+    const std::string copyName = "./logs/run_" + std::to_string(fileCount) + ".log";
+    std::filesystem::copy_file("run.log", copyName);
+  }
+}
+
+inline void startlogging(std::fstream &logfile, bool backup = false) {
+  if (backup) {
+    backuplog(false);
+  }
+  logfile.open("run.log", std::ios::out);
+  if (!logfile.is_open() || !logfile.good())
+    return;
+  // Setting the std::cout buffer to be the logfile
+  std::streambuf* newStreamBuffer = logfile.rdbuf();
+  std::cout.rdbuf(newStreamBuffer);
+  return;
+}
+
+inline void startlogging_c(FILE& logfile, bool backup = false) {
+  if (backup) {
+    backuplog(false);
+  }
+  logfile = *freopen("run.log", "w", stdout);
+}
 } // namespace logger
 
 #endif
